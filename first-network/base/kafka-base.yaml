@@ -1,0 +1,95 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+version: '2'
+
+services:
+
+  zookeeper:
+    image: hyperledger/fabric-zookeeper
+    environment:
+      #
+      # server.x=[hostname]:nnnnn[:nnnnn]
+      # The list of servers that make up the ZK ensemble. The list that is used
+      # by the clients must match the list of ZooKeeper servers that each ZK
+      # server has. There are two port numbers `nnnnn`. The first is what
+      # followers use to connect to the leader, while the second is for leader
+      # election.
+      - ZOO_SERVERS=server.1=zookeeper0.example.com:2888:3888 server.2=zookeeper1.example.com:2888:3888 server.3=zookeeper2.example.com:2888:3888
+    restart: always
+
+  kafka:
+    image: hyperledger/fabric-kafka
+    restart: always
+    environment:
+      # ========================================================================
+      #     Reference: https://kafka.apache.org/documentation/#configuration
+      # ========================================================================
+      #
+      # socket.request.max.bytes
+      # The maximum number of bytes in a socket request. ATTN: If you set this
+      # env var, you should make sure that the value assigned to
+      # `brokerConfig.Producer.MaxMessageBytes` in `newBrokerConfig()` in
+      # `fabric/orderer/kafka/util.go` matches it.
+      #- KAFKA_SOCKET_REQUEST_MAX_BYTES=104857600 # 100 * 1024 * 1024 B
+      #
+      # message.max.bytes
+      # The maximum size of envelope that the broker can receive.
+      - KAFKA_MESSAGE_MAX_BYTES=103809024 # 99 * 1024 * 1024 B
+      #
+      # replica.fetch.max.bytes
+      # The number of bytes of messages to attempt to fetch for each channel.
+      # This is not an absolute maximum, if the fetched envelope is larger than
+      # this value, the envelope will still be returned to ensure that progress
+      # can be made. The maximum message size accepted by the broker is defined
+      # via message.max.bytes above.
+      - KAFKA_REPLICA_FETCH_MAX_BYTES=103809024 # 99 * 1024 * 1024 B
+      #
+      # unclean.leader.election.enable
+      # Data consistency is key in a blockchain environment. We cannot have a
+      # leader chosen outside of the in-sync replica set, or we run the risk of
+      # overwriting the offsets that the previous leader produced, and --as a
+      # result-- rewriting the blockchain that the orderers produce.
+      - KAFKA_UNCLEAN_LEADER_ELECTION_ENABLE=false
+
+      #
+      # min.insync.replicas
+      # Let the value of this setting be M. Data is considered committed when
+      # it is written to at least M replicas (which are then considered in-sync
+      # and belong to the in-sync replica set, or ISR). In any other case, the
+      # write operation returns an error. Then:
+      # 1. if just one replica out of the N (see default.replication.factor
+      # below) that the channel data is written to becomes unavailable,
+      # operations proceed normally.
+      # 2. If N - M + 1 (or more) replicas become unavailable, Kafka cannot
+      # maintain an ISR set of M, so it stops accepting writes. Reads work
+      # without issues. The cluster becomes writeable again when M replicas get
+      # in-sync.
+      - KAFKA_MIN_INSYNC_REPLICAS=2
+      #
+      # default.replication.factor
+      # Let the value of this setting be M. This means that:
+      # 1. Each channel will have its data replicated to N brokers. These are
+      # the candidates for the ISR set for a channel. As we've noted in the
+      # min.insync.replicas section above, not all of these brokers have to be
+      # available all the time. We choose a default.replication.factor of N so
+      # as to have the largest possible candidate set for a channel's ISR.
+      # 2. Channel creations cannot go forward if less than N brokers are up.
+      - KAFKA_DEFAULT_REPLICATION_FACTOR=3
+      #
+      # zookeper.connect
+      # Point to the set of Zookeeper nodes comprising a ZK ensemble.
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper0.example.com:2181,zookeeper1.example.com:2181,zookeeper2.example.com:2181
+      #
+      # zookeeper.connection.timeout.ms
+      # The max time that the client waits to establish a connection to
+      # Zookeeper. If not set, the value in zookeeper.session.timeout.ms (below)
+      # is used.
+      #- KAFKA_ZOOKEEPER_CONNECTION_TIMEOUT_MS = 6000
+      #
+      # zookeeper.session.timeout.ms
+      #- KAFKA_ZOOKEEPER_SESSION_TIMEOUT_MS = 6000
+    #ports:
+      #- '9092'

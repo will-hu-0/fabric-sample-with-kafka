@@ -18,6 +18,7 @@ fabric-couchdb fabric-tools)
 for image in ${FABRIC_IMAGES[@]}; do
   echo "Pulling ${DOCKER_NS}/$image:${ARCH}-${VERSION}"
   docker pull ${DOCKER_NS}/$image:${ARCH}-${VERSION}
+  docker tag ${DOCKER_NS}/$image:${ARCH}-${VERSION} ${DOCKER_NS}/$image:latest
 done
 
 echo "Pulling ${DOCKER_NS}/fabric-baseos:${BASE_DOCKER_TAG}"

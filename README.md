@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/keenkit/fabric-sample-with-kafka.svg?branch=master)](https://travis-ci.org/keenkit/fabric-sample-with-kafka)
 # fabric-sample-with-kafka
 
 ## Description

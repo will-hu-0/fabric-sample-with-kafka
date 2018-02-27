@@ -10,7 +10,8 @@ before_install:
 install:
   - ./get-byfn.sh
   - ./get-docker-images.sh
-
+  - docker images
+  
 script:
   - pwd
   - ls -l

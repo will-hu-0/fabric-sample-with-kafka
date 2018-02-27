@@ -5,10 +5,10 @@ This is a folked repository from https://github.com/hyperledger/fabric-samples/t
 
 Before drilling into this demo, please make sure you are very well understanding the offical Hyperledger Fabric
 ["Build Your First Network"](http://hyperledger-fabric.readthedocs.io/en/latest/build_network.html) tutorial.
-___
+
 ## Version
 1.0.4
-___
+
 ## How to run it?
 
 #### 1. Get binaries 
@@ -98,7 +98,6 @@ Creating channel...
 ```shell
 ./byfn.sh down
 ```
-___
 ## What's behind the code change?
 
 #### 1. first-network/configtx.yaml

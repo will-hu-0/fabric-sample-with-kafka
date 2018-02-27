@@ -16,7 +16,7 @@ script:
   - ls -l
   - cd first-network
   - echo "----E2E Starts----"
-  - ./byfn up
+  - ./byfn.sh up
 
 after_script:
-  - ./byfn down  
+  - ./byfn.sh down  

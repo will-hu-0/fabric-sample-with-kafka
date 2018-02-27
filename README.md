@@ -34,7 +34,7 @@ Pull the farbric docker images. (You may skip it if you have done it before).
 cd first-network
 
 # Start up network
-./byfn up
+./byfn.sh up
 ```
 
 You will see log like:
@@ -96,7 +96,7 @@ Creating channel...
 #### 4. Bring down the network
 
 ```shell
-./byfn down
+./byfn.sh down
 ```
 ___
 ## What's behind the code change?

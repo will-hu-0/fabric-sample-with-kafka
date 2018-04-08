@@ -42,13 +42,21 @@ services:
     networks:
       - byfn
 
-  orderer.example.com:
+  orderer0.example.com:
     extends:
       file:   base/docker-compose-base.yaml
-      service: orderer.example.com
-    container_name: orderer.example.com
+      service: orderer0.example.com
+    container_name: orderer0.example.com
     networks:
       - byfn
+
+  orderer1.example.com:
+    extends:
+      file:   base/docker-compose-base.yaml
+      service: orderer1.example.com
+    container_name: orderer1.example.com
+    networks:
+      - byfn      
 
   peer0.org1.example.com:
     container_name: peer0.org1.example.com

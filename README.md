@@ -19,7 +19,9 @@ Go to root folder,
 ```shell
 ./get-byfn.sh
 ```
-如果是大陆的朋友，会遇到下载binaries非常慢的情况，你可以选择用Xunlei去https://nexus.hyperledger.org/content/repositories/releases/org/hyperledger/fabric/hyperledger-fabric/　下载对应的文件放到根目录，如下：
+如果是大陆的朋友，会遇到下载binaries非常慢的情况，你可以选择用Xunlei去https://nexus.hyperledger.org/content/repositories/releases/org/hyperledger/fabric/hyperledger-fabric/
+
+下载对应的文件放到根目录，如下：
 
 ```
 fabric-sample-with-kafka$ tree

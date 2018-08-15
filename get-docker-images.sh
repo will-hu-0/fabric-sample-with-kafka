@@ -7,19 +7,24 @@
 
 # set the default Docker namespace and tag
 DOCKER_NS=hyperledger
-ARCH=x86_64
-VERSION=1.0.4
-BASE_DOCKER_TAG=x86_64-0.3.2
+VERSION=1.2.0
+THIRDPARTY_IMAGE_VERSION=0.4.10 # Kafka & Zookeeper
 
 # set of Hyperledger Fabric images
-FABRIC_IMAGES=(fabric-peer fabric-orderer fabric-ccenv fabric-javaenv fabric-kafka fabric-zookeeper \
-fabric-couchdb fabric-tools)
+FABRIC_IMAGES=(fabric-peer fabric-orderer fabric-ccenv fabric-tools fabric-ca)
 
 for image in ${FABRIC_IMAGES[@]}; do
-  echo "Pulling ${DOCKER_NS}/$image:${ARCH}-${VERSION}"
-  docker pull ${DOCKER_NS}/$image:${ARCH}-${VERSION}
-  docker tag ${DOCKER_NS}/$image:${ARCH}-${VERSION} ${DOCKER_NS}/$image:latest
+  echo "Pulling ${DOCKER_NS}/$image:${VERSION} ..."
+  docker pull ${DOCKER_NS}/$image:${VERSION}
+  docker tag ${DOCKER_NS}/$image:${VERSION} ${DOCKER_NS}/$image:latest
 done
 
-echo "Pulling ${DOCKER_NS}/fabric-baseos:${BASE_DOCKER_TAG}"
-docker pull ${DOCKER_NS}/fabric-baseos:${BASE_DOCKER_TAG}
+# TP Hyperledger Fabric images
+TP_FABRIC_IMAGES=(fabric-kafka fabric-zookeeper)
+for image in ${TP_FABRIC_IMAGES[@]}; do
+  echo "Pulling ${DOCKER_NS}/$image:${THIRDPARTY_IMAGE_VERSION} ..."
+  docker pull ${DOCKER_NS}/$image:${THIRDPARTY_IMAGE_VERSION}
+  docker tag ${DOCKER_NS}/$image:${THIRDPARTY_IMAGE_VERSION} ${DOCKER_NS}/$image:latest
+done
+
+docker images ${DOCKER_NS}/*

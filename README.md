@@ -2,13 +2,13 @@
 # fabric-sample-with-kafka
 
 ## Description
-This is a folked repository from https://github.com/hyperledger/fabric-samples/tree/release/first-network with **Kafak** order type integrated.
+This is a folked repository from https://github.com/hyperledger/fabric-samples/tree/release-1.2/first-network with **Kafak** orderer type integrated.
 
 Before drilling into this demo, please make sure you are very well understanding the offical Hyperledger Fabric
 ["Build Your First Network"](http://hyperledger-fabric.readthedocs.io/en/latest/build_network.html) tutorial.
 
-## Version
-1.0.4
+## Fabric Version
+1.2.0
 
 ## How to run it?
 
@@ -19,6 +19,30 @@ Go to root folder,
 ```shell
 ./get-byfn.sh
 ```
+如果是大陆的朋友，会遇到下载binaries非常慢的情况，你可以选择用Xunlei去https://nexus.hyperledger.org/content/repositories/releases/org/hyperledger/fabric/hyperledger-fabric/　下载对应的文件放到根目录，如下：
+
+```
+fabric-sample-with-kafka$ tree
+.
+├── bin
+│   ├── configtxgen
+│   ├── configtxlator
+│   ├── cryptogen
+│   ├── discover
+│   ├── get-docker-images.sh
+│   ├── idemixgen
+│   ├── orderer
+│   └── peer
+├── chaincode
+...
+```
+或者找个Socks5代理地址，做一次邪恶的curl:
+
+```
+curl -x http://127.0.0.1:8118 -L \
+https://nexus.hyperledger.org/content/repositories/releases/org/hyperledger/fabric/hyperledger-fabric/linux-amd64-1.2.0/hyperledger-fabric-linux-amd64-1.2.0.tar.gz | tar xz
+```
+具体请自主搜索Socks5 + Fan Qiang（请用中文搜索）
 
 #### 2. Pull docker images
 
@@ -116,7 +140,6 @@ Kafka:
         - kafka1.example.com:9092
         - kafka2.example.com:9092
         - kafka3.example.com:9092      
-
 ```
 
 #### 2. first-network/docker-compose-kafka.yaml
@@ -169,12 +192,19 @@ function networkUp () {
   ....
   ....
   # now run the end to end script
-  sleep 5 # <== Check this line
-  docker exec cli scripts/script.sh $CHANNEL_NAME $CLI_DELAY $LANGUAGE $CLI_TIMEOUT 
-
+  sleep 12 # <====== Check this line
+  docker exec cli scripts/script.sh $CHANNEL_NAME $CLI_DELAY $LANGUAGE $CLI_TIMEOUT $VERBOSE
   if [ $? -ne 0 ]; then
     echo "ERROR !!!! Test failed"
     exit 1
   fi
 }
 ```
+
+## Issues
+The whole project is running well under a **real** Ubuntu machine. However in a VM host, the project sometimes cannot be running well, keeps getting "Service_Unavailbe" issue. I have not figured out the reason yet.
+
+## Extends
+This is a very simple project for demonstrating running **Kafka** as the ordering type, more like a hello world, should **NEVER** run it on a real production env.
+
+I will post another repository later, same chaincode, but ready for a production deployment (Need 7 VMs, running under swarm mode, you need to increase your memory (Better to have more 12G) to run that project...)

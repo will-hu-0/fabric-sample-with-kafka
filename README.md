@@ -206,6 +206,12 @@ function networkUp () {
 ## Issues
 The whole project is running well under a **real** Ubuntu machine. However in a VM host, the project sometimes cannot be running well, keeps getting "Service_Unavailbe" issue. I have not figured out the reason yet.
 
+In terms of the opening issue (https://github.com/keenkit/fabric-sample-with-kafka/issues/4), there is an effective way to resolve the issue:
+>I had Service_Unavailble error on the first run but after I increase timeout and delay I can run it successfully. So you might want to update Readme.md with this information.
+>
+>./byfn.sh up -t 30 -d 10
+
+
 ## Extends
 This is a very simple project for demonstrating running **Kafka** as the ordering type, more like a hello world, should **NEVER** run it on a real production env.
 

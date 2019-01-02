@@ -26,6 +26,8 @@ Go to root folder,
 ```
 fabric-sample-with-kafka$ tree
 .
+├── LICENSE
+├── README.md
 ├── bin
 │   ├── configtxgen
 │   ├── configtxlator
@@ -35,7 +37,9 @@ fabric-sample-with-kafka$ tree
 │   ├── idemixgen
 │   ├── orderer
 │   └── peer
-├── chaincode
+├── first-network
+│   ├── README.md
+│   ├── base
 ...
 ```
 或者找个Socks5代理地址，做一次邪恶的curl:

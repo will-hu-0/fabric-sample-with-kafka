@@ -161,7 +161,7 @@ Kafka:
       - Hostname: orderer1
 ```
 
-#### 2. first-network/docker-compose-kafka.yaml
+#### 3. first-network/docker-compose-kafka.yaml
 
 Be noticed that zookeepers and kafkas are added, be sure they are with *byfn* network:
 
@@ -186,15 +186,15 @@ Orderer should be started up after kafkas
       - byfn    
 ```      
 
-#### 3. first-network/base/docker-compose-base.yaml
+#### 4. first-network/base/docker-compose-base.yaml
 
 Add zookeepers & kafka nodes
 
-#### 4. base/kafka-base.yaml & base/order-base.yaml
+#### 5. base/kafka-base.yaml & base/order-base.yaml
 
 Check the source code from them.
 
-#### 5. byfn.sh
+#### 6. byfn.sh
 
 Update COMPOSE_FILE:
 

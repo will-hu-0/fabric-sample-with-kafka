@@ -29,7 +29,7 @@ services:
       - ../crypto-config/ordererOrganizations/example.com/orderers/orderer1.example.com/msp:/var/hyperledger/orderer/msp
       - ../crypto-config/ordererOrganizations/example.com/orderers/orderer1.example.com/tls/:/var/hyperledger/orderer/tls
     ports:
-      - 8050:8050
+      - 8050:7050
 
   peer0.org1.example.com:
     container_name: peer0.org1.example.com

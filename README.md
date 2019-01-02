@@ -7,6 +7,11 @@ This is a folked repository from https://github.com/hyperledger/fabric-samples/t
 Before drilling into this demo, please make sure you are very well understanding the offical Hyperledger Fabric
 ["Build Your First Network"](http://hyperledger-fabric.readthedocs.io/en/latest/build_network.html) tutorial.
 
+This repository is to build fabric network with multilple orderers using kafka-based consensus on single host
+
+Basically, we will have 
+>2 orderers, 4 peers, 1 CLI, 4 Kafkas, 3 Zookeepers in our fabric network.
+
 ## Fabric Version
 1.2.0
 
@@ -146,6 +151,14 @@ Kafka:
         - kafka1.example.com:9092
         - kafka2.example.com:9092
         - kafka3.example.com:9092      
+```
+
+#### 2. first-network/crypto-config.yaml
+
+```yaml
+    Specs:
+      - Hostname: orderer0
+      - Hostname: orderer1
 ```
 
 #### 2. first-network/docker-compose-kafka.yaml

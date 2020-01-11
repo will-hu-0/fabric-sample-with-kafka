@@ -10,12 +10,11 @@ before_install:
 install:
   - curl -sSL http://bit.ly/2ysbOFE | bash -s
   - docker images
+  - ( cd bin && ./cryptogen version)
   
 script:
-  - pwd
   - ls -l
   - cd first-network
-  - echo "----E2E Starts----"
   - ./byfn.sh up -o kafka
 
 after_script:

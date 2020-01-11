@@ -2,66 +2,50 @@
 # fabric-sample-with-kafka
 
 ## Description
-This is a folked repository from https://github.com/hyperledger/fabric-samples/tree/release-1.2/first-network with **Kafak** orderer type integrated.
+The folder `first-nework` is copied from https://github.com/hyperledger/fabric-samples/tree/release-1.4 , different from verison 1.2 or before, the official `release-1.4` already contains `one zookeeper and one kafka` configuration inside.
+
+Thereby this repository does a little change to support `3 zookeepers and 4 kakfas`.
 
 Before drilling into this demo, please make sure you are very well understanding the offical Hyperledger Fabric
 ["Build Your First Network"](http://hyperledger-fabric.readthedocs.io/en/latest/build_network.html) tutorial.
 
-This repository is to build fabric network with multilple orderers using kafka-based consensus on single host
-
 Basically, we will have 
->2 orderers, 4 peers, 1 CLI, 4 Kafkas, 3 Zookeepers in our fabric network.
+>1 orderer, 4 peers, 1 CLI, 4 Kafkas, 3 Zookeepers in our fabric network.
 
 ## Fabric Version
-1.2.0
+1.4.4
+
+## Bianary files version
+1.4.4
 
 ## How to run it?
 
-#### 1. Get binaries 
-Download the necessary binaries (You may skip it if you have done it before). 
+#### 1. Get binaries & docker images
+Download the necessary binaries and docker images (You may skip it if you have done it before). 
 
 Go to root folder,
 ```shell
-./get-byfn.sh
+curl -sSL http://bit.ly/2ysbOFE | bash -s
 ```
-如果是大陆的朋友，会遇到下载binaries非常慢的情况，你可以选择用Xunlei去https://nexus.hyperledger.org/content/repositories/releases/org/hyperledger/fabric/hyperledger-fabric/
-
-下载对应的文件放到根目录，如下：
+After everything done you will have folder structure like:
 
 ```
 fabric-sample-with-kafka$ tree
 .
-├── LICENSE
-├── README.md
 ├── bin
 │   ├── configtxgen
 │   ├── configtxlator
 │   ├── cryptogen
 │   ├── discover
-│   ├── get-docker-images.sh
+│   ├── fabric-ca-client
 │   ├── idemixgen
 │   ├── orderer
 │   └── peer
+├── chaincode
+│   └── chaincode_example02
 ├── first-network
-│   ├── README.md
 │   ├── base
 ...
-```
-或者找个Socks5代理地址，做一次邪恶的curl:
-
-```
-curl -x http://127.0.0.1:8118 -L \
-https://nexus.hyperledger.org/content/repositories/releases/org/hyperledger/fabric/hyperledger-fabric/linux-amd64-1.2.0/hyperledger-fabric-linux-amd64-1.2.0.tar.gz | tar xz
-```
-具体请自主搜索Socks5 + Fan Qiang（请用中文搜索）
-
-#### 2. Pull docker images
-
-Pull the farbric docker images. (You may skip it if you have done it before).
-
- Go to root folder,
-```
-./get-docker-images.sh
 ```
 
 #### 3. Run E2E test.
@@ -70,166 +54,89 @@ Pull the farbric docker images. (You may skip it if you have done it before).
 cd first-network
 
 # Start up network
-./byfn.sh up
+./byfn.sh up -o kafka
 ```
 
-You will see log like:
+You will see log like this if no exception:
 
 ```shell
-Starting with channel 'mychannel' and CLI timeout of '10' seconds and CLI delay of '3' seconds
-Continue? [Y/n] Y
+Starting for channel 'mychannel' with CLI timeout of '10' seconds and CLI delay of '3' seconds
+Continue? [Y/n] 
 proceeding ...
-/home/will/Documents/fabric-sample-with-kafka/first-network/../bin/cryptogen
+LOCAL_VERSION=1.4.4
+DOCKER_IMAGE_VERSION=1.4.4
+/home/will/Documents/blockchain/fabric-sample-with-kafka/first-network/../bin/cryptogen
 
 ##########################################################
 ##### Generate certificates using cryptogen tool #########
 ##########################################################
++ cryptogen generate --config=./crypto-config.yaml
 org1.example.com
 org2.example.com
-............
-............
++ res=0
++ set +x
+.........
+.........
 
-Creating network "net_byfn" with the default driver
-Creating peer0.org1.example.com ... 
-Creating peer1.org1.example.com ... 
-Creating peer0.org2.example.com ... 
-Creating zookeeper2.example.com ... 
-Creating zookeeper1.example.com ... 
-Creating zookeeper0.example.com ... 
-Creating peer1.org2.example.com ... 
-Creating peer1.org1.example.com
-Creating peer0.org1.example.com
-Creating zookeeper2.example.com
-Creating peer0.org2.example.com
-Creating zookeeper1.example.com
-Creating peer1.org2.example.com
-Creating peer1.org2.example.com ... doneCreating zookeeper0.example.com ... done
-Creating kafka0.example.com ... 
-Creating kafka2.example.com ... 
-Creating kafka3.example.com ... 
-Creating kafka1.example.com ... 
-Creating kafka3.example.com
-Creating kafka0.example.com
-Creating kafka2.example.com
-Creating kafka0.example.com ... done
-Creating orderer.example.com ... 
-Creating orderer.example.com ... done
-Creating cli ... 
-Creating cli ... done
+90
+===================== Query successful on peer1.org2 on channel 'mychannel' ===================== 
 
- ____    _____      _      ____    _____ 
-/ ___|  |_   _|    / \    |  _ \  |_   _|
-\___ \    | |     / _ \   | |_) |   | |  
- ___) |   | |    / ___ \  |  _ <    | |  
-|____/    |_|   /_/   \_\ |_| \_\   |_|  
+========= All GOOD, BYFN execution completed =========== 
 
-Build your first network (BYFN) end-to-end test
 
-Channel name : mychannel
-Creating channel...
+ _____   _   _   ____   
+| ____| | \ | | |  _ \  
+|  _|   |  \| | | | | | 
+| |___  | |\  | | |_| | 
+|_____| |_| \_| |____/  
 ```
 
 #### 4. Bring down the network
 
 ```shell
-./byfn.sh down
+./byfn.sh down -o kafka
 ```
 ## What's behind the code change?
 
-#### 1. first-network/configtx.yaml
+#### 1. Change first-network/configtx.yaml
+
+Make sure change the SampleDevModeKafka content...
 
 ```yaml
-# Available types are "solo" and "kafka"
-OrdererType: kafka
-
-....
-Kafka:
-    # Brokers: A list of Kafka brokers to which the orderer connects
-    # NOTE: Use IP:port notation
-    Brokers:
-        - kafka0.example.com:9092
-        - kafka1.example.com:9092
-        - kafka2.example.com:9092
-        - kafka3.example.com:9092      
+    SampleDevModeKafka:
+        <<: *ChannelDefaults
+        Capabilities:
+            <<: *ChannelCapabilities
+        Orderer:
+            <<: *OrdererDefaults
+            OrdererType: kafka
+            Kafka:
+                Brokers:
+                - kafka0.example.com:9092
+                - kafka1.example.com:9092
+                - kafka2.example.com:9092
+                - kafka3.example.com:9092   
 ```
 
-#### 2. first-network/crypto-config.yaml
+#### 2. Add first-network/base/kafka-base.yaml
 
-```yaml
-    Specs:
-      - Hostname: orderer0
-      - Hostname: orderer1
-```
+It is just a kafka/zookeeper base yaml files to be referenced.
 
-#### 3. first-network/docker-compose-kafka.yaml
+#### 3. Change first-network/docker-compose-kafka.yaml
 
-Be noticed that zookeepers and kafkas are added, be sure they are with *byfn* network:
-
-```shell
-networks:
-  - byfn
-```
-Orderer should be started up after kafkas
-
-```yaml
-  orderer.example.com:
-    extends:
-      file:   base/docker-compose-base.yaml
-      service: orderer.example.com
-    container_name: orderer.example.com
-    depends_on:
-      - kafka0.example.com
-      - kafka1.example.com
-      - kafka2.example.com
-      - kafka3.example.com  
-    networks:
-      - byfn    
-```      
-
-#### 4. first-network/base/docker-compose-base.yaml
-
-Add zookeepers & kafka nodes
-
-#### 5. base/kafka-base.yaml & base/order-base.yaml
-
-Check the source code from them.
-
-#### 6. byfn.sh
-
-Update COMPOSE_FILE:
-
-```shell
-# use this as the default docker-compose yaml definition
-COMPOSE_FILE=docker-compose-kafka.yaml
-```
-
-Sleep some time before bring up docker containers:
-
-```shell
-# Generate the needed certificates, the genesis block and start the network.
-function networkUp () {
-  ....
-  ....
-  # now run the end to end script
-  sleep 12 # <====== Check this line
-  docker exec cli scripts/script.sh $CHANNEL_NAME $CLI_DELAY $LANGUAGE $CLI_TIMEOUT $VERBOSE
-  if [ $? -ne 0 ]; then
-    echo "ERROR !!!! Test failed"
-    exit 1
-  fi
-}
-```
+Modify and add more zookeepers & kafka nodes
 
 ## Issues
-The whole project is running well under a **real** Ubuntu machine. However in a VM host, the project sometimes cannot be running well, keeps getting "Service_Unavailbe" issue. I have not figured out the reason yet.
+1. Make sure you have the **RIGHT** version binaries as well as fabric image versions.
+In this case it is **1.4.4**
 
-In terms of the opening issue (https://github.com/keenkit/fabric-sample-with-kafka/issues/4), there is an effective way to resolve the issue:
->I had Service_Unavailble error on the first run but after I increase timeout and delay I can run it successfully. So you might want to update Readme.md with this information.
->
->./byfn.sh up -t 30 -d 10
+2. Make sure the **1.4.4** fabric images are marked as Latest.
 
+```
+hyperledger/fabric-ccenv          1.4.4               ca4780293e4c        8 weeks ago         1.37GB
+hyperledger/fabric-ccenv          latest              ca4780293e4c        8 weeks ago         1.37GB
+```
+3. For previous version, please check
 
-## Extends
-This is a very simple project for demonstrating running **Kafka** as the ordering type, more like a hello world, should **NEVER** run it on a real production env.
-
-I will post another repository later, same chaincode, but ready for a production deployment (Need 7 VMs, running under swarm mode, you need to increase your memory (Better to have more 12G) to run that project...)
+- 1.2.0 https://github.com/keenkit/fabric-sample-with-kafka/tree/release-1.2.0
+- 1.0.6 https://github.com/keenkit/fabric-sample-with-kafka/tree/release-1.0.6

@@ -14,18 +14,24 @@ DELAY="$2"
 LANGUAGE="$3"
 TIMEOUT="$4"
 VERBOSE="$5"
+NO_CHAINCODE="$6"
 : ${CHANNEL_NAME:="mychannel"}
 : ${DELAY:="3"}
 : ${LANGUAGE:="golang"}
 : ${TIMEOUT:="10"}
 : ${VERBOSE:="false"}
+: ${NO_CHAINCODE:="false"}
 LANGUAGE=`echo "$LANGUAGE" | tr [:upper:] [:lower:]`
 COUNTER=1
-MAX_RETRY=5
+MAX_RETRY=10
 
 CC_SRC_PATH="github.com/chaincode/chaincode_example02/go/"
 if [ "$LANGUAGE" = "node" ]; then
 	CC_SRC_PATH="/opt/gopath/src/github.com/chaincode/chaincode_example02/node/"
+fi
+
+if [ "$LANGUAGE" = "java" ]; then
+	CC_SRC_PATH="/opt/gopath/src/github.com/chaincode/chaincode_example02/java/"
 fi
 
 echo "Channel name : "$CHANNEL_NAME
@@ -38,12 +44,12 @@ createChannel() {
 
 	if [ -z "$CORE_PEER_TLS_ENABLED" -o "$CORE_PEER_TLS_ENABLED" = "false" ]; then
                 set -x
-		peer channel create -o orderer0.example.com:7050 -c $CHANNEL_NAME -f ./channel-artifacts/channel.tx >&log.txt
+		peer channel create -o orderer.example.com:7050 -c $CHANNEL_NAME -f ./channel-artifacts/channel.tx >&log.txt
 		res=$?
                 set +x
 	else
 				set -x
-		peer channel create -o orderer0.example.com:7050 -c $CHANNEL_NAME -f ./channel-artifacts/channel.tx --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA >&log.txt
+		peer channel create -o orderer.example.com:7050 -c $CHANNEL_NAME -f ./channel-artifacts/channel.tx --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA >&log.txt
 		res=$?
 				set +x
 	fi
@@ -78,31 +84,35 @@ updateAnchorPeers 0 1
 echo "Updating anchor peers for org2..."
 updateAnchorPeers 0 2
 
-## Install chaincode on peer0.org1 and peer0.org2
-echo "Installing chaincode on peer0.org1..."
-installChaincode 0 1
-echo "Install chaincode on peer0.org2..."
-installChaincode 0 2
+if [ "${NO_CHAINCODE}" != "true" ]; then
 
-# Instantiate chaincode on peer0.org2
-echo "Instantiating chaincode on peer0.org2..."
-instantiateChaincode 0 2
+	## Install chaincode on peer0.org1 and peer0.org2
+	echo "Installing chaincode on peer0.org1..."
+	installChaincode 0 1
+	echo "Install chaincode on peer0.org2..."
+	installChaincode 0 2
 
-# Query chaincode on peer0.org1
-echo "Querying chaincode on peer0.org1..."
-chaincodeQuery 0 1 100
+	# Instantiate chaincode on peer0.org2
+	echo "Instantiating chaincode on peer0.org2..."
+	instantiateChaincode 0 2
 
-# Invoke chaincode on peer0.org1 and peer0.org2
-echo "Sending invoke transaction on peer0.org1 peer0.org2..."
-chaincodeInvoke 0 1 0 2
+	# Query chaincode on peer0.org1
+	echo "Querying chaincode on peer0.org1..."
+	chaincodeQuery 0 1 100
 
-## Install chaincode on peer1.org2
-echo "Installing chaincode on peer1.org2..."
-installChaincode 1 2
+	# Invoke chaincode on peer0.org1 and peer0.org2
+	echo "Sending invoke transaction on peer0.org1 peer0.org2..."
+	chaincodeInvoke 0 1 0 2
+	
+	## Install chaincode on peer1.org2
+	echo "Installing chaincode on peer1.org2..."
+	installChaincode 1 2
 
-# Query on chaincode on peer1.org2, check if the result is 90
-echo "Querying chaincode on peer1.org2..."
-chaincodeQuery 1 2 90
+	# Query on chaincode on peer1.org2, check if the result is 90
+	echo "Querying chaincode on peer1.org2..."
+	chaincodeQuery 1 2 90
+	
+fi
 
 echo
 echo "========= All GOOD, BYFN execution completed =========== "

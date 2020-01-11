@@ -8,8 +8,7 @@ before_install:
   - docker-compose -v
 
 install:
-  - ./get-byfn.sh
-  - ./get-docker-images.sh
+  - curl -sSL http://bit.ly/2ysbOFE | bash -s
   - docker images
   
 script:
@@ -17,7 +16,7 @@ script:
   - ls -l
   - cd first-network
   - echo "----E2E Starts----"
-  - ./byfn.sh up
+  - ./byfn.sh up -o kafka
 
 after_script:
-  - ./byfn.sh down  
+  - ./byfn.sh down -o kafka

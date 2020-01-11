@@ -3,122 +3,88 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-version: '2'
 
-volumes:
-  orderer0.example.com:
-  orderer1.example.com:
-  peer0.org1.example.com:
-  peer1.org1.example.com:
-  peer0.org2.example.com:
-  peer1.org2.example.com:
+# NOTE: This is not the way a Kafka cluster would normally be deployed in production, as it is not secure
+# and is not fault tolerant. This example is a toy deployment that is only meant to exercise the Kafka code path
+# of the ordering service.
+
+version: '2'
 
 networks:
   byfn:
-    
+
 services:
-
-  orderer0.example.com:
-    extends:
-      file:   base/docker-compose-base.yaml
-      service: orderer0.example.com
-    container_name: orderer0.example.com
-    depends_on:
-      - kafka0.example.com
-      - kafka1.example.com
-      - kafka2.example.com
-      - kafka3.example.com  
-    networks:
-      - byfn
-      
-  orderer1.example.com:
-    extends:
-      file:   base/docker-compose-base.yaml
-      service: orderer1.example.com
-    container_name: orderer1.example.com
-    depends_on:
-      - kafka0.example.com
-      - kafka1.example.com
-      - kafka2.example.com
-      - kafka3.example.com  
-    networks:
-      - byfn      
-
-  peer0.org1.example.com:
-    container_name: peer0.org1.example.com
-    extends:
-      file:  base/docker-compose-base.yaml
-      service: peer0.org1.example.com
-    networks:
-      - byfn      
-
-  peer1.org1.example.com:
-    container_name: peer1.org1.example.com
-    extends:
-      file:  base/docker-compose-base.yaml
-      service: peer1.org1.example.com
-    networks:
-      - byfn      
-      
-  peer0.org2.example.com:
-    container_name: peer0.org2.example.com
-    extends:
-      file:  base/docker-compose-base.yaml
-      service: peer0.org2.example.com
-    networks:
-      - byfn      
-
-  peer1.org2.example.com:
-    container_name: peer1.org2.example.com
-    extends:
-      file:  base/docker-compose-base.yaml
-      service: peer1.org2.example.com
-    networks:
-      - byfn
-
   zookeeper0.example.com:
     container_name: zookeeper0.example.com
     extends:
-      file: base/docker-compose-base.yaml
-      service: zookeeper0.example.com
+      file: base/kafka-base.yaml
+      service: zookeeper
+    environment:
+      - ZOO_MY_ID=1
+    ports:
+      - 2181:2181
+      - 2888:2888
+      - 3888:3888      
     networks:
-      - byfn      
+    - byfn
 
   zookeeper1.example.com:
     container_name: zookeeper1.example.com
     extends:
-      file: base/docker-compose-base.yaml
-      service: zookeeper1.example.com
+      file: base/kafka-base.yaml
+      service: zookeeper
+    environment:
+      - ZOO_MY_ID=2
+    ports:
+      - 12181:2181
+      - 12888:2888
+      - 13888:3888      
     networks:
-      - byfn      
+    - byfn
 
   zookeeper2.example.com:
     container_name: zookeeper2.example.com
     extends:
-      file: base/docker-compose-base.yaml
-      service: zookeeper2.example.com
+      file: base/kafka-base.yaml
+      service: zookeeper
+    environment:
+      - ZOO_MY_ID=3
+    ports:
+      - 22181:2181
+      - 22888:2888
+      - 23888:3888      
     networks:
-      - byfn      
+    - byfn      
 
   kafka0.example.com:
     container_name: kafka0.example.com
     extends:
-      file: base/docker-compose-base.yaml
-      service: kafka0.example.com
+      file: base/kafka-base.yaml
+      service: kafka
+    environment:
+      - KAFKA_BROKER_ID=0
+    ports:
+      - 9092:9092
+      - 9093:9093      
     networks:
-      - byfn         
+    - byfn
     depends_on:
       - zookeeper0.example.com
       - zookeeper1.example.com
-      - zookeeper2.example.com
+      - zookeeper2.example.com    
 
-  kafka1.example.com:
-    container_name: kafka1.example.com
+  kafka3.example.com:
+    container_name: kafka3.example.com
     extends:
-      file: base/docker-compose-base.yaml
-      service: kafka1.example.com
+      file: base/kafka-base.yaml
+      service: kafka
+    environment:
+      - KAFKA_BROKER_ID=1
+    ports:
+      - 10092:9092
+      - 10093:9093   
     networks:
-      - byfn         
+    - byfn
     depends_on:
       - zookeeper0.example.com
       - zookeeper1.example.com
@@ -127,10 +93,15 @@ services:
   kafka2.example.com:
     container_name: kafka2.example.com
     extends:
-      file: base/docker-compose-base.yaml
-      service: kafka2.example.com
+      file: base/kafka-base.yaml
+      service: kafka
+    environment:
+      - KAFKA_BROKER_ID=2
+    ports:
+      - 11092:9092
+      - 11093:9093
     networks:
-      - byfn         
+    - byfn
     depends_on:
       - zookeeper0.example.com
       - zookeeper1.example.com
@@ -139,45 +110,16 @@ services:
   kafka3.example.com:
     container_name: kafka3.example.com
     extends:
-      file: base/docker-compose-base.yaml
-      service: kafka3.example.com
+      file: base/kafka-base.yaml
+      service: kafka
+    environment:
+      - KAFKA_BROKER_ID=3
+    ports:
+      - 12092:9092
+      - 12093:9093 
     networks:
-      - byfn         
+    - byfn        
     depends_on:
       - zookeeper0.example.com
       - zookeeper1.example.com
       - zookeeper2.example.com
-
-  cli:
-    container_name: cli
-    image: hyperledger/fabric-tools:$IMAGE_TAG
-    tty: true
-    environment:
-      - GOPATH=/opt/gopath
-      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
-      - CORE_LOGGING_LEVEL=DEBUG
-      - CORE_PEER_ID=cli
-      - CORE_PEER_ADDRESS=peer0.org1.example.com:7051
-      - CORE_PEER_LOCALMSPID=Org1MSP
-      - CORE_PEER_TLS_ENABLED=true
-      - CORE_PEER_TLS_CERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/server.crt
-      - CORE_PEER_TLS_KEY_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/server.key
-      - CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
-      - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
-    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
-    #command: /bin/bash -c 'sleep 1000'
-    volumes:
-        - /var/run/:/host/var/run/
-        - ./examples/chaincode/:/opt/gopath/src/github.com/chaincode
-        - ./crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/
-        - ./scripts:/opt/gopath/src/github.com/hyperledger/fabric/peer/scripts/
-        - ./channel-artifacts:/opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts
-    networks:
-      - byfn
-    depends_on:
-      - orderer0.example.com
-      - orderer1.example.com
-      - peer0.org2.example.com
-      - peer1.org2.example.com
-      - peer0.org1.example.com
-      - peer1.org1.example.com
